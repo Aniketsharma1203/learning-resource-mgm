@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
+import { UserContext } from '../context/UseContext'
 import { useNavigate } from 'react-router-dom';
 import { auth } from '../firebase/Firebase';
 import { signInWithEmailAndPassword } from 'firebase/auth';
@@ -8,6 +9,10 @@ import { db } from '../firebase/Firebase';
 import SignInWithGoogle from './SignInWithGoogle';
 
 const LogIn = () => {
+
+    const { container, setcontainer } = useContext(UserContext);
+
+
     const navigate = useNavigate();
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
@@ -51,8 +56,13 @@ const LogIn = () => {
                 results = productsSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
             }
         }
-    
-        navigate(`/${results[0].role}`,{state: results});
+
+        navigate(`/${results[0].role}`);
+       
+        if (results) {
+            setcontainer(results);
+        }
+
         return results;
 
     };
@@ -65,7 +75,7 @@ const LogIn = () => {
 
             // Await the data retrieval
             const results = await getDataByUID(auth.currentUser.email);
-          
+
 
         } catch (error) {
             toast.error(error.message, {
@@ -89,7 +99,7 @@ const LogIn = () => {
                     <p className='text-xl mt-6 opacity-80'>Login using Social Networks</p>
 
                     <div className='mt-4'>
-                    <SignInWithGoogle />
+                        <SignInWithGoogle />
                     </div>
 
                     <div className="inline-flex items-center">
@@ -107,7 +117,7 @@ const LogIn = () => {
                         <button type="submit" className='bg-green-300 w-48 p-2 rounded-full'>Sign In</button>
                     </form>
 
-                    
+
                 </div>
 
                 <div className='w-[30%] h-screen bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 flex justify-center'>
