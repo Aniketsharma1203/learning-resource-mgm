@@ -10,11 +10,13 @@ import Admin from './role/Admin';
 import Dashboard from './teacher/Dashboard';
 import Courses from './teacher/Courses';
 import About from './teacher/About';
+import Container from './container/Container';
+import StudentHome from './student/StudentHome';
+import StudentCourseContainer from './container/StudentCourseContainer';
 
 function App() {
   return (
     < >
-
       <ToastContainer
         position="top-center"
         autoClose={5000}
@@ -37,6 +39,9 @@ function App() {
         <Route path='dashboard' element={<Dashboard />} />
         <Route path='courses' element={<Courses />} />
         <Route path='/about' element={<About />} />
+        <Route path='/container' element={<Container />} />
+        <Route path='/studenthome' element={<StudentHome />} />
+        <Route path='/studentcoursecontainer' element={<StudentCourseContainer />} />
       </Routes>
     </>
   );

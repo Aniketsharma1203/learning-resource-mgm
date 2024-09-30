@@ -6,10 +6,36 @@ import { IoLogOut } from "react-icons/io5";
 import Dashboard from '../teacher/Dashboard';
 import Courses from '../teacher/Courses';
 import About from '../teacher/About';
+import { auth } from '../firebase/Firebase';
+import { signOut } from 'firebase/auth';
+import { useNavigate } from 'react-router-dom';
+import { toast } from 'react-toastify';
+
 
 const Teacher = () => {
 
   const [state, isActive] = useState("Dashboard");
+  const navigate = useNavigate();
+
+  const handleLogout = () => {
+    signOut(auth).then(() => {
+      navigate("/");
+      toast.success('User logged out successfully');
+    }).catch((error) => {
+
+      toast.error(error.message, {
+        position: "top-center",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "dark",
+      });
+
+    });
+  }
 
 
   return (
@@ -34,7 +60,7 @@ const Teacher = () => {
             About
           </div>
 
-          <div className='flex items-center gap-2 text-xl hover:cursor-pointer hover:bg-green-300 p-4 rounded-lg'>
+          <div className='flex items-center gap-2 text-xl hover:cursor-pointer hover:bg-green-300 p-4 rounded-lg' onClick={handleLogout}>
             <IoLogOut />
             LogOut
           </div>
@@ -43,27 +69,27 @@ const Teacher = () => {
 
         <div className='w-[80%] bg-slate-200 overflow-scroll'>
           {
-            (state === 'Dashboard')&&(
+            (state === 'Dashboard') && (
               <div>
                 <Dashboard />
               </div>
             )
           }
           {
-            (state === 'Courses')&&(
+            (state === 'Courses') && (
               <div>
                 <Courses />
               </div>
             )
           }
           {
-            (state === 'About')&&(
+            (state === 'About') && (
               <div>
                 <About />
               </div>
             )
           }
-          
+
         </div>
 
       </div>
