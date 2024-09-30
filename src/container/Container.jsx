@@ -1,41 +1,76 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { UserContext } from '../context/UseContext';
-import { db } from '../firebase/Firebase';
+import { db, storage } from '../firebase/Firebase'; // Import storage from Firebase config
 import { doc, updateDoc, getDoc } from 'firebase/firestore';
+import { ref, uploadBytesResumable, getDownloadURL } from 'firebase/storage'; // Import storage methods
 
 const CoursePage = () => {
     const { currentCourse } = useContext(UserContext);
     const [courseContent, setContent] = useState({ selectedFile: null, previewURL: null });
     const [courseContentsList, setCourseContentsList] = useState(currentCourse.CourseContent || []);
     const { container } = useContext(UserContext);
+    const [uploading, setUploading] = useState(false);
 
     const onFileChange = (event) => {
         const file = event.target.files[0];
-        const previewURL = URL.createObjectURL(file);
-        setContent({ selectedFile: file, previewURL: previewURL });
+        setContent({ selectedFile: file, previewURL: URL.createObjectURL(file) });
     };
 
+    // Upload file to Firebase Storage
+    const uploadFileToStorage = async () => {
+        if (!courseContent.selectedFile) return null;
+
+        const file = courseContent.selectedFile;
+        const fileRef = ref(storage, `course_contents/${file.name}`); // Reference to storage path
+        const uploadTask = uploadBytesResumable(fileRef, file); // Upload task
+
+        setUploading(true); // Set uploading state
+        return new Promise((resolve, reject) => {
+            uploadTask.on(
+                'state_changed',
+                (snapshot) => {
+                    // Optional: Monitor progress (snapshot.bytesTransferred / snapshot.totalBytes) * 100
+                },
+                (error) => {
+                    console.error("Error during upload:", error);
+                    setUploading(false);
+                    reject(error);
+                },
+                async () => {
+                    // On successful upload, get the download URL
+                    const downloadURL = await getDownloadURL(uploadTask.snapshot.ref);
+                    setUploading(false);
+                    resolve(downloadURL); // Resolve promise with the download URL
+                }
+            );
+        });
+    };
 
     const addContent = async () => {
         const teacherRef = doc(db, "teacher", container[0].id);
         try {
             const teacherSnapshot = await getDoc(teacherRef);
             if (teacherSnapshot.exists()) {
+                // Get download URL after file upload
+                const downloadURL = await uploadFileToStorage();
+                if (!downloadURL) return; // Exit if no download URL
+
                 const allCourses = teacherSnapshot.data().courses;
                 const updatedCourses = allCourses.map(course => {
                     if (course.name === currentCourse.name) {
                         return {
                             ...course,
                             CourseContent: course.CourseContent
-                                ? [...course.CourseContent, courseContent.previewURL]
-                                : [courseContent.previewURL]
+                                ? [...course.CourseContent, downloadURL]
+                                : [downloadURL]
                         };
                     }
                     return course;
                 });
+
                 await updateDoc(teacherRef, { courses: updatedCourses });
                 // Update local state to trigger re-render
-                setCourseContentsList(prev => [...prev, courseContent.previewURL]);
+                setCourseContentsList(prev => [...prev, downloadURL]);
                 console.log("Course content updated successfully.");
             } else {
                 console.log("Teacher document not found.");
@@ -99,28 +134,6 @@ const CoursePage = () => {
                                 <h3 className="text-lg font-semibold">{currentCourse.name}</h3>
                                 <p className="text-gray-400 text-sm">{currentCourse.CourseContent.length} Lessons</p>
                             </div>
-                            {/* Lesson List */}
-                            <ul className="mt-4 text-sm space-y-2">
-                                <li className="flex items-center justify-between">
-                                    <div className="flex items-center">
-
-                                    </div>
-
-                                </li>
-                                <li className="flex items-center justify-between">
-                                    <div className="flex items-center">
-
-                                    </div>
-
-                                </li>
-                                <li className="flex items-center justify-between">
-                                    <div className="flex items-center">
-
-                                    </div>
-
-                                </li>
-                                {/* Add more lessons similarly */}
-                            </ul>
                         </div>
                     </div>
 
@@ -132,12 +145,14 @@ const CoursePage = () => {
                                 type="file"
                                 onChange={onFileChange}
                                 className="border p-2 rounded-lg"
+                                accept="image/*,video/*,.pdf,.docx"
                             />
                             <button
                                 onClick={onFileUpload}
                                 className="bg-blue-600 text-white py-2 px-6 rounded-lg hover:bg-blue-700"
+                                disabled={uploading}
                             >
-                                Upload!
+                                {uploading ? "Uploading..." : "Upload!"}
                             </button>
                         </div>
                         {renderCourseContentList()}
