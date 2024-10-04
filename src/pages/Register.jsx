@@ -47,7 +47,7 @@ const Register = () => {
             setPassword("");
             setEmail("");
             setRole("");
-            toast.success('Account Created Succesfully', {});
+            toast.success('Account Created Successfully', {});
             navigate('/login');
         } catch (error) {
             toast.error(error.message, {
@@ -64,29 +64,64 @@ const Register = () => {
     };
 
     return (
-        <div className='w-screen h-screen bg-gradient-to-r from-gray-300 via-gray-100 to-gray-200 flex justify-center items-center'>
-            <div className='w-[60%] bg-white shadow-lg h-[70%] rounded-lg border p-8'>
-                <h3 className='text-center font-semibold text-3xl mb-5 text-gray-800'>Create Your Account</h3>
+        <div className='min-h-screen flex items-center justify-center bg-gradient-to-r from-indigo-300 via-purple-200 to-indigo-300'>
+            <div className='w-[80%] max-w-2xl bg-white/70 backdrop-blur-md shadow-xl rounded-xl p-8'>
+                <h3 className='text-center font-semibold text-3xl mb-8 text-gray-900'>
+                    Create Your Account
+                </h3>
                 <form onSubmit={handleSubmit}>
-                    <div className='flex flex-col md:flex-row justify-between'>
-                        <div className='w-full md:w-[48%]'>
-                            <label htmlFor="name" className='block text-lg mb-2 opacity-90 text-gray-600'>Your Name <MdOutlineStar size={8} color='red' /></label>
-                            <input type="text" name='name' value={name} placeholder='Enter your name' onChange={handleChange} className='border rounded-lg h-12 w-full px-4 bg-gray-100 text-gray-700 font-medium focus:border-gray-400 focus:ring-2 focus:ring-gray-300 transition-all' />
+                    <div className='grid grid-cols-1 md:grid-cols-2 gap-6'>
+                        <div className='relative'>
+                            <label htmlFor="name" className='block text-lg text-gray-700 mb-2'>
+                                Your Name <MdOutlineStar size={8} className="inline-block text-red-500" />
+                            </label>
+                            <input
+                                type="text"
+                                name='name'
+                                value={name}
+                                placeholder='Enter your name'
+                                onChange={handleChange}
+                                className='w-full h-12 px-4 text-gray-900 bg-white/70 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-purple-300 transition-all'
+                            />
                         </div>
-                        <div className='w-full md:w-[48%] mt-6 md:mt-0'>
-                            <label htmlFor="password" className='block text-lg mb-2 opacity-90 text-gray-600'>Your Password <MdOutlineStar size={8} color='red' /></label>
-                            <input type="password" name='password' value={password} placeholder='Enter your password' onChange={handleChange} className='border rounded-lg h-12 w-full px-4 bg-gray-100 text-gray-700 font-medium focus:border-gray-400 focus:ring-2 focus:ring-gray-300 transition-all' />
+                        <div className='relative'>
+                            <label htmlFor="password" className='block text-lg text-gray-700 mb-2'>
+                                Your Password <MdOutlineStar size={8} className="inline-block text-red-500" />
+                            </label>
+                            <input
+                                type="password"
+                                name='password'
+                                value={password}
+                                placeholder='Enter your password'
+                                onChange={handleChange}
+                                className='w-full h-12 px-4 text-gray-900 bg-white/70 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-purple-300 transition-all'
+                            />
                         </div>
                     </div>
 
-                    <div className='flex flex-col md:flex-row justify-between mt-6'>
-                        <div className='w-full md:w-[48%]'>
-                            <label htmlFor="email" className='block text-lg mb-2 opacity-90 text-gray-600'>Your Email <MdOutlineStar size={8} color='red' /></label>
-                            <input type="email" name='email' value={email} placeholder='Enter your email' onChange={handleChange} className='border rounded-lg h-12 w-full px-4 bg-gray-100 text-gray-700 font-medium focus:border-gray-400 focus:ring-2 focus:ring-gray-300 transition-all' />
+                    <div className='grid grid-cols-1 md:grid-cols-2 gap-6 mt-6'>
+                        <div className='relative'>
+                            <label htmlFor="email" className='block text-lg text-gray-700 mb-2'>
+                                Your Email <MdOutlineStar size={8} className="inline-block text-red-500" />
+                            </label>
+                            <input
+                                type="email"
+                                name='email'
+                                value={email}
+                                placeholder='Enter your email'
+                                onChange={handleChange}
+                                className='w-full h-12 px-4 text-gray-900 bg-white/70 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-purple-300 transition-all'
+                            />
                         </div>
-                        <div className='w-full md:w-[48%] mt-6 md:mt-0'>
-                            <label htmlFor="role" className='block text-lg mb-2 opacity-90 text-gray-600'>Your Profession <MdOutlineStar size={8} color='red' /></label>
-                            <select name="role" value={role} onChange={handleChange} className='border rounded-lg h-12 w-full px-4 bg-gray-100 text-gray-700 font-medium focus:border-gray-400 focus:ring-2 focus:ring-gray-300 transition-all'>
+                        <div className='relative'>
+                            <label htmlFor="role" className='block text-lg text-gray-700 mb-2'>
+                                Your Profession <MdOutlineStar size={8} className="inline-block text-red-500" />
+                            </label>
+                            <select
+                                name="role"
+                                value={role}
+                                onChange={handleChange}
+                                className='w-full h-12 px-4 text-gray-900 bg-white/70 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-purple-300 transition-all'>
                                 <option value="" disabled>Select your profession</option>
                                 <option value="student">Student</option>
                                 <option value="teacher">Teacher</option>
@@ -95,10 +130,14 @@ const Register = () => {
                         </div>
                     </div>
 
-                    <p className='text-center mt-8 text-gray-600'>Already have an account? <a href="/login" className='text-blue-500 hover:text-blue-700 underline'>Click here</a></p>
+                    <p className='text-center mt-8 text-gray-700'>
+                        Already have an account? <a href="/login" className='text-indigo-500 hover:text-indigo-700 underline'>Click here</a>
+                    </p>
 
                     <div className='flex items-center justify-center mt-10'>
-                        <button type="submit" className='bg-gradient-to-r from-green-400 to-green-500 hover:bg-green-600 text-white py-3 px-8 font-semibold border rounded-lg shadow-md hover:shadow-lg transition-all'>
+                        <button
+                            type="submit"
+                            className='py-3 px-8 font-semibold text-white bg-gradient-to-r from-indigo-500 to-purple-600 rounded-lg shadow-md hover:shadow-lg transition-transform transform hover:-translate-y-1 hover:scale-105'>
                             Register Now
                         </button>
                     </div>
