@@ -1,6 +1,6 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { UserContext } from '../context/UseContext';
-import { doc, getDoc } from "firebase/firestore";
+import { collection, doc, getDoc, getDocs } from "firebase/firestore";
 import { db } from '../firebase/Firebase';
 import Calendar from 'react-calendar';
 import 'react-calendar/dist/Calendar.css';
@@ -11,7 +11,44 @@ const Dashboard = () => {
     const date = new Date();
     const formattedDate = date.toLocaleDateString();
     const role = container[0]?.role?.toUpperCase() || 'USER';
-    const [courses, setCourses] = useState([]); 
+    const [courses, setCourses] = useState([]);
+    const [uids, setUids] = useState([]);
+    const [announcementContainer, setAnnouncementsContainer] = useState([]);
+
+    const getUids = async () => {
+        try {
+            const AdminUidRef = collection(db, 'admin');
+            const adminSnap = await getDocs(AdminUidRef);
+            const uid = adminSnap.docs.map((doc) => doc.id);
+            setUids(uid);
+        } catch (error) {
+            console.log(error.message);
+        }
+    };
+
+    useEffect(() => {
+        getUids();
+    }, []);
+
+    const getAnnouncements = async () => {
+        const adminRef = doc(db, 'admin', uids[0]);
+        try {
+            const adminShot = await getDoc(adminRef);
+            if (adminShot.exists()) {
+                const data = adminShot.data();
+                const announcements = data.announcements || [];
+                setAnnouncementsContainer(announcements);
+            }
+        } catch (error) {
+            console.log(error.message);
+        }
+    };
+
+    useEffect(() => {
+        if (uids.length > 0) {
+            getAnnouncements();
+        }
+    }, [uids]);
 
     const newCourse = async () => {
         setLoading(true);
@@ -24,7 +61,7 @@ const Dashboard = () => {
             const docSnapshot = await getDoc(docRef);
             if (docSnapshot.exists()) {
                 const data = docSnapshot.data();
-                setCourses(data.courses || []); 
+                setCourses(data.courses || []);
             } else {
                 console.log("No such document!");
             }
@@ -81,8 +118,9 @@ const Dashboard = () => {
                                     </div>
                                 </div>
 
-                                {/* Right Side (Profile & Calendar) */}
+                                {/* Right Side (Profile, Calendar & Announcements) */}
                                 <div className="bg-white p-6 rounded-lg shadow-md">
+                                    {/* Profile Section */}
                                     <div className="flex items-center mb-6">
                                         <img src={require('../pics/Teacher.png')} alt="teacher" className="w-16 h-16 rounded-full object-cover" />
                                         <div className="ml-4">
@@ -96,25 +134,24 @@ const Dashboard = () => {
                                         <Calendar className="w-full rounded-lg shadow-md" />
                                     </div>
 
+                                    {/* Announcements Section */}
                                     <div>
-                                        <h4 className="font-semibold text-xl text-gray-700 mb-4">All Courses</h4>
-                                        <ul className="space-y-4">
+                                        <h4 className="font-semibold text-xl text-gray-700 mb-4">Announcements</h4>
+                                        <div className="space-y-4">
                                             {
-                                                courses.length > 0 ? (
-                                                    courses.map((course, index) => (
-                                                        <li key={index} className="bg-orange-100 p-4 rounded-lg flex items-start space-x-4">
-                                                            <img src={require("../pics/Web.jfif")} alt="course" className="w-12 h-12 object-cover rounded-md" />
-                                                            <div>
-                                                                <p className="font-semibold text-lg text-gray-800">{course.name}</p>
-                                                                <p className="text-sm text-gray-600">{course.value} lessons</p>
-                                                            </div>
-                                                        </li>
+                                                announcementContainer.length > 0 ? (
+                                                    announcementContainer.map((announcement, index) => (
+                                                        <div key={index} className="bg-blue-50 p-4 rounded-lg shadow hover:bg-blue-100 transition-all">
+                                                            <h4 className="text-lg font-semibold text-blue-600">{announcement.Heading}</h4>
+                                                            <p className="text-gray-600">{announcement.Description}</p>
+                                                            <p className="text-sm text-gray-400 mt-2">Thursday, 23 June, 2019 at 9:23 PM</p>
+                                                        </div>
                                                     ))
                                                 ) : (
-                                                    <p className="text-gray-600">No Courses Available.</p>
+                                                    <p className="text-gray-600">No Announcements Available.</p>
                                                 )
                                             }
-                                        </ul>
+                                        </div>
                                     </div>
                                 </div>
                             </div>

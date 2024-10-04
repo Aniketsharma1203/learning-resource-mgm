@@ -21,13 +21,12 @@ const Courses = () => {
   const [img, setImg] = useState(null);
   const [price, setPrice] = useState(null);
 
-  console.log(container[0].id);
 
   const courseContainer = (course) => {
     setCourse(course);
     Navigate('/container');
   };
-  console.log(currentCourse, "curent");
+  
   const addCourse = async () => {
     const teacher = doc(db, "teacher", container[0].id);
     try {
@@ -40,7 +39,7 @@ const Courses = () => {
         const currentCourses = teacherData.courses || [];
 
         // Add the new course to the existing courses array
-        const newCourse = { "name": name, "value": value, "desc": description, "img": img, "price": price, "Enrolled": [], "CourseContent": [] };
+        const newCourse = { "name": name, "value": value, "desc": description, "img": img, "price": price, "Enrolled": [], "CourseContent": [], "Author": container[0].id };
 
         const updatedCourses = [...currentCourses, newCourse];
 
@@ -68,6 +67,10 @@ const Courses = () => {
     addCourse();
     setName("");
     setValue("");
+    setDesc("");
+    setImg("");
+    setPrice("");
+
   };
 
   const fetchCourses = async () => {

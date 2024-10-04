@@ -13,7 +13,12 @@ const CoursePage = () => {
 
     const onFileChange = (event) => {
         const file = event.target.files[0];
-        setContent({ selectedFile: file, previewURL: URL.createObjectURL(file) });
+        try {
+            setContent({ selectedFile: file, previewURL: URL.createObjectURL(file) });
+        } catch (error) {
+            console.log(error.message);
+        }
+
     };
 
     // Upload file to Firebase Storage
@@ -45,6 +50,12 @@ const CoursePage = () => {
             );
         });
     };
+
+    useEffect(() => {
+        console.log("Course content updated:", courseContent);
+        console.log("Course contents list updated:", courseContentsList);
+        console.log("Uploading state:", uploading);
+    }, [courseContent, courseContentsList, uploading]);
 
     const addContent = async () => {
         const teacherRef = doc(db, "teacher", container[0].id);
@@ -91,10 +102,12 @@ const CoursePage = () => {
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mt-4">
                     {courseContentsList.map((content, index) => (
                         <div key={index} className="bg-gray-800 rounded-lg overflow-hidden p-4">
-                            {content.endsWith('.jpg') || content.endsWith('.png') || content.endsWith('.jpeg') ? (
-                                <img src={content} alt={`Course Content ${index}`} className="w-full h-48 object-cover" />
-                            ) : content.endsWith('.mp4') ? (
-                                <video controls className="w-full h-48 object-cover">
+                            {content.includes('.jpg') || content.includes('.png') || content.includes('.jpeg') ? (
+                                <a href={content} target="_blank" rel="noopener noreferrer" className="text-blue-500 hover:underline flex justify-center items-center text-2xl">
+                                    View File
+                                </a>
+                            ) : content.includes('.mp4') ? (
+                                <video controls className="w-full h-48 object-cover" src={content} typeof="video/mp4">
                                     <source src={content} type="video/mp4" />
                                 </video>
                             ) : (
@@ -104,6 +117,8 @@ const CoursePage = () => {
                             )}
                         </div>
                     ))}
+
+
                 </div>
             );
         } else {
@@ -168,10 +183,7 @@ const CoursePage = () => {
                             className="w-full rounded-lg mb-4"
                         />
                         <p className="font-semibold text-lg mb-2">Price: ${currentCourse.price}</p>
-                        <p className="font-semibold text-lg mb-4">Value: {currentCourse.value}</p>
-                        <button className="bg-orange-600 text-white py-2 px-4 rounded-lg w-full hover:bg-orange-700">
-                            ENROLL FOR FREE
-                        </button>
+                        <p className="font-semibold text-lg mb-4">Lessons: {currentCourse.value}</p>
                     </div>
                 </div>
             </div>

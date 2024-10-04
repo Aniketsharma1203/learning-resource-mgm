@@ -13,6 +13,9 @@ import About from './teacher/About';
 import Container from './container/Container';
 import StudentHome from './student/StudentHome';
 import StudentCourseContainer from './container/StudentCourseContainer';
+import TeachersList from './Admin/AdminContainer/TeachersList';
+import StudentList from './Admin/AdminContainer/StudentList';
+import CoursesList from './Admin/AdminContainer/CoursesList';
 
 function App() {
   return (
@@ -42,6 +45,9 @@ function App() {
         <Route path='/container' element={<Container />} />
         <Route path='/studenthome' element={<StudentHome />} />
         <Route path='/studentcoursecontainer' element={<StudentCourseContainer />} />
+        <Route path='/teacherList' element={<TeachersList />} />
+        <Route path='/studentList' element={< StudentList />} />
+        <Route path='/courseList' element={< CoursesList />} />
       </Routes>
     </>
   );
