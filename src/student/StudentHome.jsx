@@ -46,6 +46,15 @@ const StudentHome = () => {
         }
     }, [uids]);
 
+    const today = new Date();
+    const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+    const formattedDate = today.toLocaleDateString('en-US', options);
+
+    const hours = String(today.getHours()).padStart(2, '0');
+    const minutes = String(today.getMinutes()).padStart(2, '0');
+
+    const currentTime = `${hours}:${minutes}`;
+
     useEffect(() => {
         const fetchEnrolledCourses = async () => {
             try {
@@ -103,7 +112,7 @@ const StudentHome = () => {
                             <div key={id} className="bg-blue-50 p-4 rounded-lg shadow hover:bg-blue-100 transition">
                                 <h4 className="text-lg font-semibold text-blue-600">{data.Heading}</h4>
                                 <p className="text-gray-600">{data.Description}</p>
-                                <p className="text-sm text-gray-400 mt-2">Thursday, 23 June, 2019 at 9:23 PM</p>
+                                <p className="text-sm text-gray-400 mt-2">{formattedDate}, {currentTime}</p>
                             </div>
                         ))}
                     </div>
