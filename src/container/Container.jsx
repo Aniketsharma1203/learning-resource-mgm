@@ -7,7 +7,7 @@ import { ref, uploadBytesResumable, getDownloadURL } from 'firebase/storage'; //
 const CoursePage = () => {
     const { currentCourse } = useContext(UserContext);
     const [courseContent, setContent] = useState({ selectedFile: null, previewURL: null });
-    const [courseContentsList, setCourseContentsList] = useState(currentCourse.CourseContent || []);
+    const [courseContentsList, setCourseContentsList] = useState(currentCourse.CourseContent || []); // If no content, default to an empty array
     const { container } = useContext(UserContext);
     const [uploading, setUploading] = useState(false);
 
@@ -62,7 +62,7 @@ const CoursePage = () => {
                             ...course,
                             CourseContent: course.CourseContent
                                 ? [...course.CourseContent, downloadURL]
-                                : [downloadURL]
+                                : [downloadURL] // Create array if CourseContent doesn't exist
                         };
                     }
                     return course;
@@ -132,7 +132,7 @@ const CoursePage = () => {
                         <div className="mb-4">
                             <div className="bg-gray-700 p-4 rounded-lg">
                                 <h3 className="text-lg font-semibold">{currentCourse.name}</h3>
-                                <p className="text-gray-400 text-sm">{currentCourse.CourseContent.length} Lessons</p>
+                                <p className="text-gray-400 text-sm">{courseContentsList.length} Lessons</p> {/* Updated to handle empty content */}
                             </div>
                         </div>
                     </div>

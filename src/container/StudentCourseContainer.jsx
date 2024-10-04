@@ -1,6 +1,7 @@
 import React from 'react';
 import { useLocation } from 'react-router-dom';
 
+
 const StudentCourseContainer = () => {
     const courses = useLocation();
     const data = courses.state.key;

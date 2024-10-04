@@ -7,12 +7,37 @@ import { UserContext } from '../context/UseContext';
 import StudentHome from '../student/StudentHome';
 import StudentCourse from '../student/StudentCourse';
 import StudentAcademicInfo from '../student/StudentAcademicInfo';
+import { auth } from '../firebase/Firebase';
+import { signOut } from 'firebase/auth';
+import { useNavigate } from 'react-router-dom';
+import { toast } from 'react-toastify';
 
 const Student = () => {
   const { container } = useContext(UserContext);
   const date = new Date();
   const formattedDate = date.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
   const [currentState, setCurrentState] = useState("Home");
+  const navigate = useNavigate();
+
+  const handleLogout = () => {
+    signOut(auth).then(() => {
+      navigate("/");
+      toast.success('User logged out successfully');
+    }).catch((error) => {
+
+      toast.error(error.message, {
+        position: "top-center",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "dark",
+      });
+
+    });
+  }
 
   return (
     <div>
@@ -37,7 +62,7 @@ const Student = () => {
               <GiGraduateCap className="text-xl" />
               <p className="text-base">Academic Information</p>
             </div>
-            <div className="flex items-center space-x-4 hover:bg-red-600 p-2 rounded cursor-pointer">
+            <div className="flex items-center space-x-4 hover:bg-red-600 p-2 rounded cursor-pointer" onClick={handleLogout}>
               <PiSignOutBold className="text-xl text-red-400" />
               <p className="text-base">Sign Out</p>
             </div>
