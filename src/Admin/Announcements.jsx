@@ -3,11 +3,12 @@ import { UserContext } from '../context/UseContext';
 import { doc, getDoc, updateDoc } from 'firebase/firestore';
 import { db } from '../firebase/Firebase';
 import { toast } from 'react-toastify';
+import { ImCross } from 'react-icons/im';
 
 const Announcements = () => {
   const [heading, setHeading] = useState('');
   const [description, setDescription] = useState('');
-  const [isCreating, setIsCreating] = useState(false); 
+  const [isCreating, setIsCreating] = useState(false);
   const { container } = useContext(UserContext);
   const [alreadyAnnouncements, setAnnouncements] = useState([]);
 
@@ -45,7 +46,6 @@ const Announcements = () => {
         toast.success('Announcement added.');
         setAnnouncements(updatedAnnouncements);
 
-       
         setHeading('');
         setDescription('');
         setIsCreating(false);
@@ -55,11 +55,25 @@ const Announcements = () => {
     }
   };
 
+  const deleteAnnouncement = async (id) => {
+    const adminRef = doc(db, 'admin', container[0].id);
+    try {
+      const updatedAnnouncements = alreadyAnnouncements.filter((_, index) => index !== id);
+      await updateDoc(adminRef, {
+        announcements: updatedAnnouncements,
+      });
+      setAnnouncements(updatedAnnouncements);
+      toast.success('Announcement deleted.');
+    } catch (error) {
+      console.log(error.message);
+    }
+  };
+
   const today = new Date();
   const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
   const formattedDate = today.toLocaleDateString('en-US', options);
 
-  const hours = String(today.getHours()).padStart(2, '0'); 
+  const hours = String(today.getHours()).padStart(2, '0');
   const minutes = String(today.getMinutes()).padStart(2, '0');
 
   const currentTime = `${hours}:${minutes}`;
@@ -130,17 +144,26 @@ const Announcements = () => {
               alreadyAnnouncements.map((data, id) => (
                 <div
                   key={id}
-                  className="bg-white shadow-lg p-4 rounded-lg flex items-center space-x-4 hover:bg-gray-50 transition"
+                  className="bg-white shadow-lg p-4 rounded-lg flex items-center space-x-4 hover:bg-gray-50 transition relative"
                 >
                   <img
                     src={`https://i.pravatar.cc/40?img=${id + 1}`}
                     alt="avatar"
                     className="rounded-full w-12 h-12"
                   />
-                  <div>
+                  <div className="">
                     <h3 className="font-semibold text-lg text-blue-600">{data.Heading}</h3>
                     <p className="text-gray-600">{data.Description}</p>
-                    <p className="text-sm text-gray-400 mt-2">{formattedDate} at {hours}:{minutes}</p>
+                    <p className="text-sm text-gray-400 mt-2">{formattedDate} at {currentTime}</p>
+                  </div>
+
+                  {/* Delete Button */}
+                  <div
+                    className="absolute right-4 top-4 p-2 bg-red-500 text-white rounded-full cursor-pointer hover:bg-red-600 transition transform hover:scale-110"
+                    onClick={() => deleteAnnouncement(id)}
+                    title="Delete Announcement"
+                  >
+                    <ImCross className="w-4 h-4" />
                   </div>
                 </div>
               ))
